@@ -1,12 +1,12 @@
 /**
  * Variables Configuration
  * =======================
- * 
+ *
  * CENTRAL PLACE TO DEFINE ALL SHARED VARIABLES
- * 
+ *
  * This file defines all variables that can be shared across sections.
  * AI agents should read this file to understand what variables are available.
- * 
+ *
  * USAGE:
  * 1. Define variables here with their default values and metadata
  * 2. Use them in any section with: const x = useVar('variableName', defaultValue)
@@ -53,108 +53,159 @@ export interface VariableDefinition {
 
 /**
  * =====================================================
- * 🎯 DEFINE YOUR VARIABLES HERE
+ * 🎯 CIRCLE BASICS LESSON VARIABLES
  * =====================================================
- * 
- * SUPPORTED TYPES:
- * 
- * 1. NUMBER (slider):
- *    { defaultValue: 5, type: 'number', min: 0, max: 10, step: 1 }
- * 
- * 2. TEXT (free text):
- *    { defaultValue: 'Hello', type: 'text', placeholder: 'Enter text...' }
- * 
- * 3. SELECT (dropdown):
- *    { defaultValue: 'sine', type: 'select', options: ['sine', 'cosine', 'tangent'] }
- * 
- * 4. BOOLEAN (toggle):
- *    { defaultValue: true, type: 'boolean' }
- * 
- * 5. ARRAY (list of numbers):
- *    { defaultValue: [1, 2, 3], type: 'array' }
- * 
- * 6. OBJECT (complex data):
- *    { defaultValue: { x: 5, y: 10 }, type: 'object', schema: '{ x: number, y: number }' }
  */
 export const variableDefinitions: Record<string, VariableDefinition> = {
-    // ========================================
-    // ADD YOUR VARIABLES HERE
-    // ========================================
-
-    // Uncomment and modify these examples for your lesson:
-
-    /*
     // ─────────────────────────────────────────
-    // NUMBER - Use with sliders
+    // INTERACTIVE RADIUS VALUE
     // ─────────────────────────────────────────
-    myValue: {
-        defaultValue: 5,
+    circleRadius: {
+        defaultValue: 3,
         type: 'number',
-        label: 'My Value',
-        description: 'A number that controls something',
-        unit: 'm',           // optional unit display
+        label: 'Radius',
+        description: 'The radius of the circle for interactive exploration',
+        unit: 'cm',
+        min: 1,
+        max: 5,
+        step: 0.5,
+        color: '#62D0AD',
+    },
+
+    // ─────────────────────────────────────────
+    // LINKED HIGHLIGHT FOR CIRCLE PARTS
+    // ─────────────────────────────────────────
+    circlePartHighlight: {
+        defaultValue: '',
+        type: 'text',
+        label: 'Circle Part Highlight',
+        description: 'Currently highlighted part of the circle',
+        color: '#8E90F5',
+        bgColor: 'rgba(142, 144, 245, 0.15)',
+    },
+
+    // ─────────────────────────────────────────
+    // CHECKPOINT 1: DIAMETER QUESTION
+    // ─────────────────────────────────────────
+    answerDiameterValue: {
+        defaultValue: '',
+        type: 'text',
+        label: 'Diameter Answer',
+        description: 'Student answer for diameter calculation',
+        placeholder: '?',
+        correctAnswer: '10',
+        color: '#8E90F5',
+    },
+
+    // ─────────────────────────────────────────
+    // CHECKPOINT 2: CIRCUMFERENCE IDENTIFICATION
+    // ─────────────────────────────────────────
+    answerCircumferenceName: {
+        defaultValue: '',
+        type: 'select',
+        label: 'Circumference Name',
+        description: 'Student identifies the circumference',
+        placeholder: '???',
+        correctAnswer: 'circumference',
+        options: ['radius', 'diameter', 'circumference', 'chord'],
+        color: '#F7B23B',
+    },
+
+    // ─────────────────────────────────────────
+    // CHECKPOINT 3: CHORD VS ARC
+    // ─────────────────────────────────────────
+    answerChordDefinition: {
+        defaultValue: '',
+        type: 'select',
+        label: 'Chord Definition',
+        description: 'Student identifies what a chord is',
+        placeholder: '???',
+        correctAnswer: 'straight line',
+        options: ['curved line', 'straight line', 'the centre', 'the radius'],
+        color: '#AC8BF9',
+    },
+
+    // ─────────────────────────────────────────
+    // CHECKPOINT 4: SECTOR VS SEGMENT
+    // ─────────────────────────────────────────
+    answerSectorShape: {
+        defaultValue: '',
+        type: 'select',
+        label: 'Sector Shape',
+        description: 'Student identifies what a sector looks like',
+        placeholder: '???',
+        correctAnswer: 'pizza slice',
+        options: ['pizza slice', 'orange segment', 'half circle', 'square'],
+        color: '#F8A0CD',
+    },
+
+    // ─────────────────────────────────────────
+    // FINAL ASSESSMENT QUESTIONS
+    // ─────────────────────────────────────────
+    answerFinalRadius: {
+        defaultValue: '',
+        type: 'text',
+        label: 'Final Radius Question',
+        description: 'Final assessment radius question',
+        placeholder: '?',
+        correctAnswer: '7',
+        color: '#62D0AD',
+    },
+
+    answerFinalDiameter: {
+        defaultValue: '',
+        type: 'text',
+        label: 'Final Diameter Question',
+        description: 'Final assessment diameter question',
+        placeholder: '?',
+        correctAnswer: '8',
+        color: '#8E90F5',
+    },
+
+    answerFinalPartName: {
+        defaultValue: '',
+        type: 'select',
+        label: 'Final Part Name',
+        description: 'Identify the part that passes through centre',
+        placeholder: '???',
+        correctAnswer: 'diameter',
+        options: ['radius', 'diameter', 'chord', 'arc'],
+        color: '#F7B23B',
+    },
+
+    answerFinalChordArc: {
+        defaultValue: '',
+        type: 'select',
+        label: 'Final Chord Arc Question',
+        description: 'Difference between chord and arc',
+        placeholder: '???',
+        correctAnswer: 'chord is straight, arc is curved',
+        options: ['both are curved', 'chord is straight, arc is curved', 'both are straight', 'arc is straight, chord is curved'],
+        color: '#AC8BF9',
+    },
+
+    // ─────────────────────────────────────────
+    // DRAWING TASK STATUS
+    // ─────────────────────────────────────────
+    drawRadiusStatus: {
+        defaultValue: 'pending',
+        type: 'text',
+        label: 'Draw Radius Task Status',
+        description: 'Status of the draw radius visual task',
+    },
+
+    // ─────────────────────────────────────────
+    // STEP LAYOUT PROGRESS
+    // ─────────────────────────────────────────
+    lessonProgress: {
+        defaultValue: 0,
+        type: 'number',
+        label: 'Lesson Progress',
+        description: 'Current step in the lesson',
         min: 0,
         max: 10,
-        step: 0.5,
+        step: 1,
     },
-
-    // ─────────────────────────────────────────
-    // TEXT - Free text input
-    // ─────────────────────────────────────────
-    lessonTitle: {
-        defaultValue: 'My Lesson',
-        type: 'text',
-        label: 'Lesson Title',
-        description: 'The title of your lesson',
-        placeholder: 'Enter a title...',
-    },
-
-    // ─────────────────────────────────────────
-    // SELECT - Dropdown with options
-    // ─────────────────────────────────────────
-    difficulty: {
-        defaultValue: 'medium',
-        type: 'select',
-        label: 'Difficulty',
-        description: 'The difficulty level of the lesson',
-        options: ['easy', 'medium', 'hard', 'expert'],
-    },
-
-    // ─────────────────────────────────────────
-    // BOOLEAN - Toggle switch
-    // ─────────────────────────────────────────
-    showHints: {
-        defaultValue: true,
-        type: 'boolean',
-        label: 'Show Hints',
-        description: 'Toggle to show or hide hints',
-    },
-
-    // ─────────────────────────────────────────
-    // ARRAY - List of numbers
-    // ─────────────────────────────────────────
-    dataPoints: {
-        defaultValue: [1, 4, 9, 16, 25],
-        type: 'array',
-        label: 'Data Points',
-        description: 'Y-values for plotting a graph',
-    },
-
-    // ─────────────────────────────────────────
-    // OBJECT - Complex structured data
-    // ─────────────────────────────────────────
-    graphSettings: {
-        defaultValue: { 
-            xMin: -10, 
-            xMax: 10, 
-            showGrid: true 
-        },
-        type: 'object',
-        label: 'Graph Settings',
-        description: 'Configuration for the graph display',
-        schema: '{ xMin: number, xMax: number, showGrid: boolean }',
-    },
-    */
 };
 
 /**
