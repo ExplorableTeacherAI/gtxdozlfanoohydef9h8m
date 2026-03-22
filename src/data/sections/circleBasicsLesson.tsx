@@ -54,6 +54,61 @@ const COLORS = {
 // REACTIVE VISUALIZATIONS
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** Worked solution component - shows step-by-step working like pen on paper */
+function WorkedSolution({ varName, correctValue }: { varName: string; correctValue: string }) {
+    const answer = useVar(varName, '') as string;
+    const isCorrect = answer.trim() === correctValue;
+    const hasAnswer = answer.trim() !== '';
+
+    if (!hasAnswer) return null;
+
+    return (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-5 mt-2">
+            <div className="font-semibold text-amber-800 mb-3">
+                {isCorrect ? "✓ Here's the working:" : "Let me show you how to solve this:"}
+            </div>
+            <div className="font-mono text-slate-800 space-y-2 pl-4 border-l-2 border-amber-300">
+                <div className="flex items-center gap-2">
+                    <span className="text-slate-500 text-sm w-16">Step 1:</span>
+                    <span>Write down what we know</span>
+                </div>
+                <div className="pl-20 text-slate-700">
+                    Radius = 5 cm
+                </div>
+
+                <div className="flex items-center gap-2 mt-3">
+                    <span className="text-slate-500 text-sm w-16">Step 2:</span>
+                    <span>Write the formula</span>
+                </div>
+                <div className="pl-20 text-slate-700">
+                    Diameter = 2 × Radius
+                </div>
+
+                <div className="flex items-center gap-2 mt-3">
+                    <span className="text-slate-500 text-sm w-16">Step 3:</span>
+                    <span>Substitute the value</span>
+                </div>
+                <div className="pl-20 text-slate-700">
+                    Diameter = 2 × 5
+                </div>
+
+                <div className="flex items-center gap-2 mt-3">
+                    <span className="text-slate-500 text-sm w-16">Step 4:</span>
+                    <span>Calculate</span>
+                </div>
+                <div className="pl-20 font-semibold" style={{ color: COLORS.diameter }}>
+                    Diameter = 10 cm
+                </div>
+            </div>
+            {!isCorrect && (
+                <div className="mt-4 pt-3 border-t border-amber-200 text-amber-700 text-sm">
+                    Your answer was {answer} cm. The correct answer is 10 cm apply the formula above.
+                </div>
+            )}
+        </div>
+    );
+}
+
 /** Interactive circle diagram showing radius and diameter */
 function InteractiveCircleDiagram() {
     const radius = useVar('circleRadius', 3) as number;
@@ -518,7 +573,7 @@ export const radiusDiameterBlocks: ReactElement[] = [
                     varName="answerDiameterValue"
                     correctValue="10"
                     position="terminal"
-                    successMessage="— correct! Since diameter = 2 × radius, we get 2 × 5 = 10 cm"
+                    successMessage="— correct!"
                     failureMessage="— not quite."
                     hint="Remember: diameter = 2 × radius"
                     reviewBlockId="radius-formula"
@@ -531,6 +586,12 @@ export const radiusDiameterBlocks: ReactElement[] = [
                     />
                 </InlineFeedback>{" "}cm.
             </EditableParagraph>
+        </Block>
+    </StackLayout>,
+
+    <StackLayout key="layout-checkpoint-one-working" maxWidth="xl">
+        <Block id="checkpoint-one-working" padding="md">
+            <WorkedSolution varName="answerDiameterValue" correctValue="10" />
         </Block>
     </StackLayout>,
 ];
