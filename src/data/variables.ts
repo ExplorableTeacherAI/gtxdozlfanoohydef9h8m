@@ -97,6 +97,45 @@ export const variableDefinitions: Record<string, VariableDefinition> = {
         color: '#8E90F5',
     },
 
+    // Practice box steps for Checkpoint 1
+    practiceStep1Given: {
+        defaultValue: '',
+        type: 'text',
+        label: 'Step 1 Given Value',
+        description: 'What value is given in the question',
+        placeholder: '?',
+        correctAnswer: '5',
+        color: '#62D0AD',
+    },
+    practiceStep2Formula: {
+        defaultValue: '',
+        type: 'select',
+        label: 'Step 2 Formula',
+        description: 'Which formula to use',
+        placeholder: '???',
+        correctAnswer: 'Diameter = 2 × Radius',
+        options: ['Diameter = 2 × Radius', 'Radius = 2 × Diameter', 'Diameter = Radius ÷ 2'],
+        color: '#8E90F5',
+    },
+    practiceStep3Substitute: {
+        defaultValue: '',
+        type: 'text',
+        label: 'Step 3 Substitution',
+        description: 'Substitute the value into the formula',
+        placeholder: '?',
+        correctAnswer: '5',
+        color: '#F7B23B',
+    },
+    practiceStep4Answer: {
+        defaultValue: '',
+        type: 'text',
+        label: 'Step 4 Answer',
+        description: 'Final calculated answer',
+        placeholder: '?',
+        correctAnswer: '10',
+        color: '#22c55e',
+    },
+
     // ─────────────────────────────────────────
     // CHECKPOINT 2: CIRCUMFERENCE IDENTIFICATION
     // ─────────────────────────────────────────

@@ -54,10 +54,30 @@ const COLORS = {
 // REACTIVE VISUALIZATIONS
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** Step in a worked solution */
+interface WorkedStep {
+    instruction: string;
+    content: string;
+    highlight?: boolean;
+    color?: string;
+}
+
 /** Worked solution component - shows step-by-step working like pen on paper */
-function WorkedSolution({ varName, correctValue }: { varName: string; correctValue: string }) {
+function WorkedSolution({
+    varName,
+    correctValue,
+    steps,
+    unit = '',
+    wrongAnswerText,
+}: {
+    varName: string;
+    correctValue: string;
+    steps: WorkedStep[];
+    unit?: string;
+    wrongAnswerText?: string;
+}) {
     const answer = useVar(varName, '') as string;
-    const isCorrect = answer.trim() === correctValue;
+    const isCorrect = answer.trim().toLowerCase() === correctValue.toLowerCase();
     const hasAnswer = answer.trim() !== '';
 
     if (!hasAnswer) return null;
@@ -68,41 +88,195 @@ function WorkedSolution({ varName, correctValue }: { varName: string; correctVal
                 {isCorrect ? "✓ Here's the working:" : "Let me show you how to solve this:"}
             </div>
             <div className="font-mono text-slate-800 space-y-2 pl-4 border-l-2 border-amber-300">
-                <div className="flex items-center gap-2">
-                    <span className="text-slate-500 text-sm w-16">Step 1:</span>
-                    <span>Write down what we know</span>
+                {steps.map((step, index) => (
+                    <div key={index}>
+                        <div className="flex items-center gap-2 mt-3">
+                            <span className="text-slate-500 text-sm w-16">Step {index + 1}:</span>
+                            <span>{step.instruction}</span>
+                        </div>
+                        <div
+                            className={`pl-20 ${step.highlight ? 'font-semibold' : 'text-slate-700'}`}
+                            style={step.color ? { color: step.color } : undefined}
+                        >
+                            {step.content}
+                        </div>
+                    </div>
+                ))}
+            </div>
+            {!isCorrect && wrongAnswerText && (
+                <div className="mt-4 pt-3 border-t border-amber-200 text-amber-700 text-sm">
+                    Your answer was "{answer}"{unit ? ` ${unit}` : ''}. {wrongAnswerText}
                 </div>
-                <div className="pl-20 text-slate-700">
-                    Radius = 5 cm
-                </div>
+            )}
+        </div>
+    );
+}
 
-                <div className="flex items-center gap-2 mt-3">
-                    <span className="text-slate-500 text-sm w-16">Step 2:</span>
-                    <span>Write the formula</span>
-                </div>
-                <div className="pl-20 text-slate-700">
-                    Diameter = 2 × Radius
-                </div>
+/** Explanation component for definition/concept questions */
+function ConceptExplanation({
+    varName,
+    correctValue,
+    explanation,
+    keyPoint,
+}: {
+    varName: string;
+    correctValue: string;
+    explanation: string;
+    keyPoint: string;
+}) {
+    const answer = useVar(varName, '') as string;
+    const isCorrect = answer.trim().toLowerCase() === correctValue.toLowerCase();
+    const hasAnswer = answer.trim() !== '';
 
-                <div className="flex items-center gap-2 mt-3">
-                    <span className="text-slate-500 text-sm w-16">Step 3:</span>
-                    <span>Substitute the value</span>
-                </div>
-                <div className="pl-20 text-slate-700">
-                    Diameter = 2 × 5
-                </div>
+    if (!hasAnswer) return null;
 
-                <div className="flex items-center gap-2 mt-3">
-                    <span className="text-slate-500 text-sm w-16">Step 4:</span>
-                    <span>Calculate</span>
-                </div>
-                <div className="pl-20 font-semibold" style={{ color: COLORS.diameter }}>
-                    Diameter = 10 cm
+    return (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-5 mt-2">
+            <div className="font-semibold text-amber-800 mb-3">
+                {isCorrect ? "✓ Correct!" : "Here's the explanation:"}
+            </div>
+            <div className="text-slate-700 space-y-3">
+                <p>{explanation}</p>
+                <div className="bg-white border border-amber-200 rounded p-3">
+                    <span className="font-semibold text-amber-800">Key Point: </span>
+                    <span>{keyPoint}</span>
                 </div>
             </div>
             {!isCorrect && (
                 <div className="mt-4 pt-3 border-t border-amber-200 text-amber-700 text-sm">
-                    Your answer was {answer} cm. The correct answer is 10 cm apply the formula above.
+                    You selected "{answer}". The correct answer is "{correctValue}".
+                </div>
+            )}
+        </div>
+    );
+}
+
+/** Interactive practice box where students work through steps like on an iPad */
+function InteractivePracticeBox() {
+    const step1 = useVar('practiceStep1Given', '') as string;
+    const step2 = useVar('practiceStep2Formula', '') as string;
+    const step3 = useVar('practiceStep3Substitute', '') as string;
+    const step4 = useVar('practiceStep4Answer', '') as string;
+
+    const step1Correct = step1.trim() === '5';
+    const step2Correct = step2.trim().toLowerCase() === 'diameter = 2 × radius';
+    const step3Correct = step3.trim() === '5';
+    const step4Correct = step4.trim() === '10';
+
+    const allCorrect = step1Correct && step2Correct && step3Correct && step4Correct;
+    const hasAnyInput = step1.trim() !== '' || step2.trim() !== '' || step3.trim() !== '' || step4.trim() !== '';
+
+    return (
+        <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 mt-4">
+            <div className="flex items-center gap-2 mb-4">
+                <span className="text-xl">✏️</span>
+                <span className="font-semibold text-slate-700">Try It Yourself</span>
+            </div>
+            <div className="text-sm text-slate-500 mb-4">
+                Work through the steps below, just like you would on paper.
+            </div>
+
+            <div className="space-y-4">
+                {/* Step 1: Given Value */}
+                <div className={`p-4 rounded-lg border-2 ${step1.trim() !== '' ? (step1Correct ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200') : 'bg-white border-slate-200'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-slate-700 text-white text-xs font-bold px-2 py-1 rounded">Step 1</span>
+                        <span className="text-slate-600">What is the given value?</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-lg">
+                        <span>Radius =</span>
+                        <InlineClozeInput
+                            varName="practiceStep1Given"
+                            correctAnswer="5"
+                            placeholder="?"
+                            color={COLORS.radius}
+                        />
+                        <span>cm</span>
+                        {step1.trim() !== '' && (
+                            <span className={step1Correct ? 'text-green-600' : 'text-amber-600'}>
+                                {step1Correct ? '✓' : '✗'}
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Step 2: Choose Formula */}
+                <div className={`p-4 rounded-lg border-2 ${step2.trim() !== '' ? (step2Correct ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200') : 'bg-white border-slate-200'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-slate-700 text-white text-xs font-bold px-2 py-1 rounded">Step 2</span>
+                        <span className="text-slate-600">Which formula do we use?</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-lg">
+                        <InlineClozeChoice
+                            varName="practiceStep2Formula"
+                            correctAnswer="Diameter = 2 × Radius"
+                            options={["Diameter = 2 × Radius", "Radius = 2 × Diameter", "Diameter = Radius ÷ 2"]}
+                            placeholder="???"
+                            color={COLORS.diameter}
+                        />
+                        {step2.trim() !== '' && (
+                            <span className={step2Correct ? 'text-green-600' : 'text-amber-600'}>
+                                {step2Correct ? '✓' : '✗'}
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Step 3: Substitute */}
+                <div className={`p-4 rounded-lg border-2 ${step3.trim() !== '' ? (step3Correct ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200') : 'bg-white border-slate-200'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-slate-700 text-white text-xs font-bold px-2 py-1 rounded">Step 3</span>
+                        <span className="text-slate-600">Put the number into the formula</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-lg">
+                        <span>Diameter = 2 ×</span>
+                        <InlineClozeInput
+                            varName="practiceStep3Substitute"
+                            correctAnswer="5"
+                            placeholder="?"
+                            color={COLORS.circumference}
+                        />
+                        {step3.trim() !== '' && (
+                            <span className={step3Correct ? 'text-green-600' : 'text-amber-600'}>
+                                {step3Correct ? '✓' : '✗'}
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Step 4: Calculate */}
+                <div className={`p-4 rounded-lg border-2 ${step4.trim() !== '' ? (step4Correct ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200') : 'bg-white border-slate-200'}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-slate-700 text-white text-xs font-bold px-2 py-1 rounded">Step 4</span>
+                        <span className="text-slate-600">Calculate the answer</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-lg">
+                        <span>Diameter =</span>
+                        <InlineClozeInput
+                            varName="practiceStep4Answer"
+                            correctAnswer="10"
+                            placeholder="?"
+                            color={COLORS.centre}
+                        />
+                        <span>cm</span>
+                        {step4.trim() !== '' && (
+                            <span className={step4Correct ? 'text-green-600' : 'text-amber-600'}>
+                                {step4Correct ? '✓' : '✗'}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Result */}
+            {allCorrect && (
+                <div className="mt-4 p-4 bg-green-100 border border-green-300 rounded-lg text-green-800 font-semibold text-center">
+                    ✓ Excellent! You've worked through all the steps correctly!
+                </div>
+            )}
+            {hasAnyInput && !allCorrect && (step1.trim() !== '' || step2.trim() !== '' || step3.trim() !== '' || step4.trim() !== '') && (
+                <div className="mt-4 text-sm text-slate-500">
+                    Keep going! Fill in all the steps to complete the working.
                 </div>
             )}
         </div>
@@ -193,7 +367,7 @@ function InteractiveCircleDiagram() {
                 steps={[
                     {
                         gesture: "drag-circular",
-                        label: "Drag the teal point to change the radius",
+                        label: "Drag the green point to change the radius",
                         position: { x: "65%", y: "35%" },
                         dragPath: { type: "arc", startAngle: 45, endAngle: 90, radius: 35 },
                     },
@@ -523,9 +697,9 @@ export const radiusDiameterBlocks: ReactElement[] = [
                 <EditableParagraph id="para-radius-explanation" blockId="radius-explanation">
                     Try dragging the{" "}
                     <InlineSpotColor varName="circleRadius" color={COLORS.radius}>
-                        teal point
+                        green point on the circle
                     </InlineSpotColor>
-                    {" "}around the circle. Notice how the radius value changes as you move it closer to or further from the centre. The{" "}
+                    {" "}around. Notice how the radius value changes as you move it closer to or further from the centre. The{" "}
                     <InlineLinkedHighlight
                         varName="circlePartHighlight"
                         highlightId="diameter"
@@ -591,7 +765,24 @@ export const radiusDiameterBlocks: ReactElement[] = [
 
     <StackLayout key="layout-checkpoint-one-working" maxWidth="xl">
         <Block id="checkpoint-one-working" padding="md">
-            <WorkedSolution varName="answerDiameterValue" correctValue="10" />
+            <WorkedSolution
+                varName="answerDiameterValue"
+                correctValue="10"
+                unit="cm"
+                wrongAnswerText="The correct answer is 10 cm. Follow the steps above to see how."
+                steps={[
+                    { instruction: "Write down what we know", content: "Radius = 5 cm" },
+                    { instruction: "Write the formula", content: "Diameter = 2 × Radius" },
+                    { instruction: "Substitute the value", content: "Diameter = 2 × 5" },
+                    { instruction: "Calculate", content: "Diameter = 10 cm", highlight: true, color: COLORS.diameter },
+                ]}
+            />
+        </Block>
+    </StackLayout>,
+
+    <StackLayout key="layout-checkpoint-one-practice" maxWidth="xl">
+        <Block id="checkpoint-one-practice" padding="sm">
+            <InteractivePracticeBox />
         </Block>
     </StackLayout>,
 ];
@@ -623,37 +814,75 @@ export const circumferenceBlocks: ReactElement[] = [
 
     <StackLayout key="layout-circumference-visual" maxWidth="md">
         <Block id="circumference-visual" padding="sm" hasVisualization>
-            <Cartesian2D
-                height={280}
-                viewBox={{ x: [-5, 5], y: [-5, 5] }}
-                showGrid={false}
-                plots={[
-                    {
-                        type: "circle",
-                        center: [0, 0],
-                        radius: 3.5,
+            <div className="relative">
+                <Cartesian2D
+                    height={280}
+                    viewBox={{ x: [-5, 5], y: [-5, 5] }}
+                    showGrid={false}
+                    plots={[
+                        {
+                            type: "circle",
+                            center: [0, 0],
+                            radius: 3.5,
+                            color: COLORS.circumference,
+                            fillOpacity: 0.08,
+                        },
+                        {
+                            type: "point",
+                            x: 0,
+                            y: 0,
+                            color: COLORS.centre,
+                        },
+                    ]}
+                />
+                {/* Label for circumference */}
+                <div
+                    className="absolute text-sm font-semibold px-2 py-1 rounded"
+                    style={{
+                        top: '10%',
+                        right: '20%',
                         color: COLORS.circumference,
-                        fillOpacity: 0.08,
-                    },
-                    {
-                        type: "point",
-                        x: 0,
-                        y: 0,
+                        backgroundColor: 'rgba(247, 178, 59, 0.15)',
+                    }}
+                >
+                    Circumference
+                </div>
+                {/* Label for centre */}
+                <div
+                    className="absolute text-xs font-medium px-2 py-1 rounded"
+                    style={{
+                        top: '55%',
+                        left: '52%',
                         color: COLORS.centre,
-                    },
-                ]}
-            />
+                        backgroundColor: 'rgba(34, 197, 94, 0.15)',
+                    }}
+                >
+                    Centre
+                </div>
+            </div>
+        </Block>
+    </StackLayout>,
+
+    <StackLayout key="layout-circumference-explanation" maxWidth="xl">
+        <Block id="circumference-explanation" padding="sm">
+            <EditableParagraph id="para-circumference-explanation" blockId="circumference-explanation">
+                In the diagram above, the{" "}
+                <InlineSpotColor varName="circlePartHighlight" color={COLORS.circumference}>
+                    amber line
+                </InlineSpotColor>
+                {" "}is the circumference. This is the outer edge of the circle. The{" "}
+                <InlineSpotColor varName="circlePartHighlight" color={COLORS.centre}>
+                    green dot
+                </InlineSpotColor>
+                {" "}in the middle is the centre. Notice that the circumference forms a complete loop around the centre.
+            </EditableParagraph>
         </Block>
     </StackLayout>,
 
     <StackLayout key="layout-circumference-note" maxWidth="xl">
         <Block id="circumference-note" padding="sm">
             <EditableParagraph id="para-circumference-note" blockId="circumference-note">
-                The circumference is the curved boundary you see highlighted in{" "}
-                <InlineSpotColor varName="circlePartHighlight" color={COLORS.circumference}>
-                    amber
-                </InlineSpotColor>
-                . Every point on this line is exactly the same distance from the centre.
+                <strong>Key Point:</strong> The circumference is like the perimeter of a circle. If you measure along the amber line all the way around, that distance is the circumference. Every point on this line is exactly the same distance from the centre.
             </EditableParagraph>
         </Block>
     </StackLayout>,
@@ -689,6 +918,17 @@ export const circumferenceBlocks: ReactElement[] = [
                     />
                 </InlineFeedback>.
             </EditableParagraph>
+        </Block>
+    </StackLayout>,
+
+    <StackLayout key="layout-checkpoint-two-explanation" maxWidth="xl">
+        <Block id="checkpoint-two-explanation" padding="md">
+            <ConceptExplanation
+                varName="answerCircumferenceName"
+                correctValue="circumference"
+                explanation="The circumference is the distance around the outside of a circle. Just like a rectangle has a perimeter, a circle has a circumference. If you walked along the edge of a circular field, the distance you travel is the circumference."
+                keyPoint="Circumference = the perimeter of a circle = the distance around the outside."
+            />
         </Block>
     </StackLayout>,
 ];
@@ -767,6 +1007,17 @@ export const chordsArcsBlocks: ReactElement[] = [
                 </InlineFeedback>{" "}
                 that connects two points on the circumference.
             </EditableParagraph>
+        </Block>
+    </StackLayout>,
+
+    <StackLayout key="layout-checkpoint-three-explanation" maxWidth="xl">
+        <Block id="checkpoint-three-explanation" padding="md">
+            <ConceptExplanation
+                varName="answerChordDefinition"
+                correctValue="straight line"
+                explanation="A chord is always a straight line that connects two points on the edge of a circle. Unlike an arc which is curved, a chord takes the direct path between two points. The diameter is actually a special chord that passes through the centre."
+                keyPoint="Chord = straight line connecting two points on the circumference. Arc = curved line along the circumference."
+            />
         </Block>
     </StackLayout>,
 ];
