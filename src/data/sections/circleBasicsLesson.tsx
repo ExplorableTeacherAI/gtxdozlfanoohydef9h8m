@@ -578,16 +578,6 @@ export const introductionBlocks: ReactElement[] = [
         </Block>
     </StackLayout>,
 
-    <StackLayout key="layout-intro-audio" maxWidth="xl">
-        <Block id="intro-audio" padding="sm">
-            <VideoDisplay
-                src="https://www.youtube.com/embed/mMB9YhSQNdc"
-                caption="Introduction to Parts of a Circle"
-                aspectRatio="16/9"
-            />
-        </Block>
-    </StackLayout>,
-
     <StackLayout key="layout-intro-welcome" maxWidth="xl">
         <Block id="intro-welcome" padding="sm">
             <EditableParagraph id="para-intro-welcome" blockId="intro-welcome">
